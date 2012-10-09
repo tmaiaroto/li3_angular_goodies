@@ -44,13 +44,10 @@
                             '</div>',
                 link: function ($scope, element, attrs, DocumentTableController) {
 
-                 //console.dir(documentTableDirective.service('documentTableServices').factory('BlogPostIndex').get());
                     var $injector = angular.injector(['documentTableServices']);
 
                     // First, we need to reference the service factory name.
                     $scope.serviceName = attrs.service;
-                    var ServiceName = attrs.service;
-
 
                     // The attribute "columns" will determine which columns to show.
                     // It should be formmated like: {columnKey: 'Column Name'}
