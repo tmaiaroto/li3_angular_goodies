@@ -10,8 +10,33 @@ Say you want to have a table that lists all the users in your application with t
 to sort, search, and paginate. This will allow you to render the widget right on the page
 with one line in your Lithium view template.
 
+Your view template may look like this:
+
 ```
+<?=$this->html->script(array(
+	'https://ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js',
+	'https://ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular-resource.min.js',
+	'https://ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular-sanitize.min.js',
+	'/li3_angular_goodies/js/services/document-table-services.js',
+	'/li3_angular_goodies/js/directives/document-table-directive.js',
+	'/li3_angular_goodies/js/angular-ui/build/angular-ui.min.js',
+	'/li3_angular_goodies/js/controllers/document-table-controller.js',
+), array('inline' => false)); ?>
+<?=$this->html->style(array(
+	'/li3_angular_goodies/css/angular-ui.min.css'
+), array('inline' => false)); ?>
+
 <doctable service="UsersIndex" results-per-page="25"></doctable>
+
+<script type="text/javascript">
+// Bootstrap Angular manually.
+angular.element(document).ready(function() {
+	var myApp = angular.module('myApp', ['documentTableDirective', 'ui']);
+
+	// Bootstrap the application.
+	angular.bootstrap(document, ['myApp']);
+});
+</script>
 ```
 
 __Attributes for doctable__
