@@ -14,7 +14,7 @@ with one line in your Lithium view template.
 <doctable service="UsersIndex" results-per-page="25"></doctable>
 ```
 
-__Options for doctable__
+__Attributes for doctable__
 
 __Pagination__  
 pagination='pager' : Rounded pager style buttons  
