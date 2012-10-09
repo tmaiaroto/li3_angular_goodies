@@ -10,7 +10,8 @@ Say you want to have a table that lists all the users in your application with t
 to sort, search, and paginate. This will allow you to render the widget right on the page
 with one line in your Lithium view template.
 
-Your view template may look like this:
+You're going to need Angular UI and you'll also want to include a few scripts from li3_angular_goodies
+of course. So your view template may look like this:
 
 ```
 <?=$this->html->script(array(
