@@ -16,6 +16,11 @@ with one line in your Lithium view template.
 
 __Attributes for doctable__
 
+First, you're going to need to specify a service attribute. This will be
+the name of a service factory in the documentTableServices module.
+See document-table-services.js for more.  
+You should probably extend, override, or use this as a guide.
+
 __Pagination__  
 pagination='pager' : Rounded pager style buttons  
 pagination='pager wide' : Rounded pager style buttons with next/prev at opposite ends left/right  
