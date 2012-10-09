@@ -5,7 +5,7 @@
  * It should be formatted like so:
  * {
  *  success: true,
- * 	result: [
+ * 	documents: [
  *		{
  *		field: value
  *		field2: value
@@ -26,6 +26,8 @@
  * A "succcess" field needs to be true or false. This can be set false by the server side code
  * if there is some sort of problem that should prevent the document table from updating.
  * However, this field is optional and if not present, the controller will assume everything is ok.
+ *
+ * A "documents" field is simply an array of objects. This is what populates the table.
  *
  * Then there needs to be a "total" for total number of results.
  * A "page" for the current page.

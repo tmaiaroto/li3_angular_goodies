@@ -1,0 +1,3 @@
+[submodule "webroot/js/angular-ui"]
+	path = webroot/js/angular-ui
+	url = git://github.com/angular-ui/angular-ui.git
