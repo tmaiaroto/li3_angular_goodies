@@ -29,7 +29,7 @@ of course. So your view template may look like this:
 	'/li3_angular_goodies/js/controllers/document-table-controller.js',
 ), array('inline' => false)); ?>
 <?=$this->html->style(array(
-	'/li3_angular_goodies/css/angular-ui.min.css'
+	'/li3_angular_goodies/js/angular-ui/build/angular-ui.min.css'
 ), array('inline' => false)); ?>
 
 <doctable service="UsersIndex" results-per-page="25"></doctable>
