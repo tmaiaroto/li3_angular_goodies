@@ -10,6 +10,11 @@ Say you want to have a table that lists all the users in your application with t
 to sort, search, and paginate. This will allow you to render the widget right on the page
 with one line in your Lithium view template.
 
+Before you can use it, you will need an action that will return a JSON response. That shouldn't be
+any real challenge in Lithium, but you'll want to just quickly double check that you are returning
+all of the fields that the directive is looking for. See the ```document-table-services.js``` file
+for how that should be formatted. You'll need page numbers, limits, search queries, etc.
+
 You're going to need Angular UI and you'll also want to include a few scripts from li3_angular_goodies
 of course. So your view template may look like this:
 
