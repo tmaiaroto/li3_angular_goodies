@@ -86,6 +86,9 @@ search-min="3" : How many letters must be entered before making a request to the
 search-placeholder="search..." : Puts placeholder text in the search box
 
 __Table Options__  
+This directive really caters to Twitter Bootstrap's styles. So you can add any of the table classes from Twitter Bootstrap
+to the table rendered from this directive. Of course, you can add any other class name(s) that you want.
+
 table-class="table-striped" : Applies classes to the table element in addition to a "table" class which is always present
 
 table-caption="Some text..." : Applies a table caption (can be HTML)
