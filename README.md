@@ -2,6 +2,8 @@ Lithium Angular Goodies
 =========
 
 This library will provide a few Angular features (directives, etc.) for use with Lithium.
+It will assume that you're using jQuery, Angular (of course), and it has a heavy bias toward
+Twitter Bootstrap. Although, Twitter Bootstrap is not required, you'll likely want to use it.
 
 ## Document Table Directive
 
