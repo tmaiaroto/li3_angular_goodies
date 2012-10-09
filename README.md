@@ -9,4 +9,6 @@ Say you want to have a table that lists all the users in your application with t
 to sort, search, and paginate. This will allow you to render the widget right on the page
 with one line in your Lithium view template.
 
-```<doctable></doctable>```
+```
+<doctable></doctable>
+```
