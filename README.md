@@ -92,7 +92,7 @@ search-min="3" : How many letters must be entered before making a request to the
 
 search-placeholder="search..." : Puts placeholder text in the search box
 
-__Table Options__
+__Table Options__   
 This directive really caters to Twitter Bootstrap's styles. So you can add any of the table classes from Twitter Bootstrap
 to the table rendered from this directive. Of course, you can add any other class name(s) that you want.
 
@@ -105,7 +105,7 @@ columns="{firstName:'First Name'}" : Allows the columns to be adjusted, which fi
 
 columns="{$actions:'Actions'"} : A special field name...This will allow a filter to change the field value to display links, etc.
 
-__Actions__
+__Actions__   
 You'll likely want to have actions for each row of data. Be it links in a column to view, edit, or remove a document...Or actions
 for specific events like clicking on a title or mouse over/out events, etc. This is taken care of autmatically and there's an event
 dispatcher, of the sorts, that you can take advantage of.
