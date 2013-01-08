@@ -190,7 +190,7 @@
                             $scope.page = page;
                         }
 
-                        $injector.get($scope.serviceName).get({territoryUrl: $scope.territoryUrl, page: $scope.page, order: $scope.order, limit: $scope.limit, q: $scope.q}, function(u, getResponseHeaders) {
+                        $injector.get($scope.serviceName).get({page: $scope.page, order: $scope.order, limit: $scope.limit, q: $scope.q}, function(u, getResponseHeaders) {
                             if(u.success == true) {
                                 $scope.tableData = u.documents;
                                 $scope.totalPages = u.totalPages;
@@ -220,7 +220,7 @@
                         }
 
                         $scope.order = key + ',' + direction;
-                        $injector.get($scope.serviceName).get({territoryUrl: $scope.territoryUrl, page: $scope.page, order: $scope.order, limit: $scope.limit, q: $scope.q}, function(u, getResponseHeaders) {
+                        $injector.get($scope.serviceName).get({page: $scope.page, order: $scope.order, limit: $scope.limit, q: $scope.q}, function(u, getResponseHeaders) {
                             if(u.success == true) {
                                 $scope.tableData = u.documents;
                                 $scope.totalPages = u.totalPages;
@@ -290,7 +290,7 @@
                         });
                     });
 
-                    // Watch to see if the service changed on the fly.
+                    // Watch to see if the service changed on the fly (and this should also initially load the data).
                     $scope.$watch('serviceName', function(newValue, oldValue, scope) {
                         if(newValue === undefined) {
                             return;
@@ -300,6 +300,7 @@
                             if(u.success == true) {
                                 $scope.tableData = u.documents;
                                 $scope.totalPages = u.totalPages;
+                                $scope.$apply('tableData');
                             }
                         });
                     });
