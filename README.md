@@ -146,3 +146,14 @@ any arbitrary key value and label for a column. For example:
 Now, you'll have an empty column title "Actions" in your table. However, like every field, it responds to all of the same events. So you could
 take advantage of the "init" event and add links to view, edit, delete, or whatever. Remember you have the document data for the current row
 during "init" as well.
+
+How? You aren't going to be manipulating the DOM in this case, you're going to be manipulating the angular directive data. So if you wanted to put
+some text in this fake "Actions" column, you would do:
+```
+function initActions(data, field, event, element) {
+	element.row[key] = '<a href="' + data.url + '">View</a>';
+}
+```
+
+For each row you would now have a link "View" that went to whatever the URL was for the document's "url" field appear under each "Actions" column.
+You can include, almost, any HTML and/or JavaScript that you like here. It will be inserted into the directive's template.
