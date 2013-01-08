@@ -89,7 +89,7 @@ function actionDelegate(event, element) {
 								'<caption ng-bind-html-unsafe="tableCaption">{{tableCaption}}</caption>' +
 								'<thead>' +
 									'<tr>' +
-										'<th ng-repeat="key in columnKeys"><a href="#" ng-click="sortByColumn($event, key)" class="column-sort-field">{{columns[key]}}</a></th>' +
+										'<th ng-repeat="key in columnKeys" class="heading-{{key}}"><a href="#" ng-click="sortByColumn($event, key)" class="column-sort-field">{{columns[key]}}</a></th>' +
 									'</tr>' +
 								'</thead>' +
 								'<tr ng-repeat="row in tableData">' +
@@ -115,6 +115,9 @@ function actionDelegate(event, element) {
 
 					// First, we need to reference the service factory name.
 					$scope.serviceName = attrs.service;
+
+					// A list of all fields returned by the server (to compare fake fields against real ones)
+					$scope.realFields = new Array();
 
 					$scope.actions = new Array();
 					if(attrs.actions !== undefined) {
@@ -264,6 +267,13 @@ function actionDelegate(event, element) {
 
 						$injector.get($scope.serviceName).get({page: $scope.page, order: $scope.order, limit: $scope.limit, q: $scope.q}, function(u, getResponseHeaders) {
 							if(u.success == true) {
+								var fields = new Array();
+								if(u.documents[0] !== undefined) {
+									for(i in u.documents[0]) {
+										fields.push(i);
+									}
+									$scope.realFields = fields;
+								}
 								$scope.tableData = u.documents;
 								$scope.totalPages = u.totalPages;
 							}
@@ -294,6 +304,13 @@ function actionDelegate(event, element) {
 						$scope.order = key + ',' + direction;
 						$injector.get($scope.serviceName).get({page: $scope.page, order: $scope.order, limit: $scope.limit, q: $scope.q}, function(u, getResponseHeaders) {
 							if(u.success == true) {
+								var fields = new Array();
+								if(u.documents[0] !== undefined) {
+									for(i in u.documents[0]) {
+										fields.push(i);
+									}
+									$scope.realFields = fields;
+								}
 								$scope.tableData = u.documents;
 								$scope.totalPages = u.totalPages;
 							}
@@ -308,6 +325,19 @@ function actionDelegate(event, element) {
 
 						if($scope.tableData[0] === undefined) {
 							return;
+						}
+
+						// Remove sort functionality from "fake" columns.
+						for(i in $scope.columnKeys) {
+							var inArray = false;
+							for(j in $scope.realFields) {
+								if($scope.columnKeys[i] == $scope.realFields[j]) {
+									inArray = true;
+								}
+							}
+							if(!inArray) {
+								$('.heading-' + $scope.columnKeys[i]).html($scope.columns[$scope.columnKeys[i]]);
+							}
 						}
 
 						// Set an array of page numbers to appear in the pagination links.
@@ -356,6 +386,13 @@ function actionDelegate(event, element) {
 						}
 						$injector.get($scope.serviceName).get({territoryUrl: $scope.territoryUrl, page: $scope.page, order: $scope.order, limit: $scope.limit, q: $scope.q}, function(u, getResponseHeaders) {
 							if(u.success == true) {
+								var fields = new Array();
+								if(u.documents[0] !== undefined) {
+									for(i in u.documents[0]) {
+										fields.push(i);
+									}
+									$scope.realFields = fields;
+								}
 								$scope.tableData = u.documents;
 								$scope.totalPages = u.totalPages;
 							}
@@ -370,6 +407,13 @@ function actionDelegate(event, element) {
 
 						$injector.get(newValue).get({territoryUrl: $scope.territoryUrl, page: $scope.page, order: $scope.order, limit: $scope.limit, q: $scope.q}, function(u, getResponseHeaders) {
 							if(u.success == true) {
+								var fields = new Array();
+								if(u.documents[0] !== undefined) {
+									for(i in u.documents[0]) {
+										fields.push(i);
+									}
+									$scope.realFields = fields;
+								}
 								$scope.tableData = u.documents;
 								$scope.totalPages = u.totalPages;
 								$scope.$apply('tableData');
