@@ -136,7 +136,7 @@ easily have been ```function clickUrl()``` or ```function clickName()``` or what
 If you used the ```docTableAction()``` function instead, you would have to check the ```event.type``` and the ```field``` document key to see if it
 was the event type and data you were after first. So writing a function like ```clickDate(data, field, event, element)``` is shorter for you.
 
-__Fake Fields__
+__Fake Fields__   
 You can include "fake" fields or columns in your table. When you go to define the optional "columns" attribute on the doctable, you can enter in
 any arbitrary key value and label for a column. For example:
 ```
