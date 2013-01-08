@@ -1,6 +1,58 @@
+/**
+ * This method will call special user defined functions for each event.
+ * They should be named like: eventnamelowerCamelField
+ * ie. clickMyField, clickName, dblclickName
+ * ...and so on.
+ *
+ * Alternatively, if these functions are not defined, a catch all
+ * function will be used if defined. This function simply needs
+ * to be called: "docTableAction" and it will have the event
+ * object and element passed to it. From there, you can do whatever
+ * you like. Get data from the element via jQuery, Angular, whatever.
+ *
+ * This allows user defined functions to be set outside this file
+ * on the page somewhere and exposes the document table data to
+ * the page, row by row, at the same time it handles events.
+ *
+ * NOTE: The "init" event will return an angular element.
+ *
+ * @see    http://docs.angularjs.org/api/angular.element
+ * @param  {object} event   The event object
+ * @param  {object} element The DOM object
+ * @return {function}
+ */
+function actionDelegate(event, element) {
+    var eventType = event.type;
+    if(eventType != 'init') {
+        var tdElem = angular.element(element);
+        var trElem = angular.element(element).parent('tr');
+        var docData = trElem.scope().row;
+        var key = tdElem.scope().key;
+    } else {
+        var docData = element.$parent.row;
+        var key = element.key;
+    }
+
+    // http://kevin.vanzonneveld.net
+    var ucfirst = function(str) {
+        str += '';
+        var f = str.charAt(0).toUpperCase();
+        return f + str.substr(1);
+    }
+
+    var eventFunctionString = eventType + ucfirst(key);
+    if((eval('typeof(' + eventFunctionString + ')')) == 'function') {
+        return eval(eventFunctionString + '(docData, key, event, element)');
+    } else if(typeof docTableAction == 'function') {
+        return docTableAction(event, element)
+    } else {
+        return false;
+    }
+}
+
 (function () {
 
-    var documentTableDirective = angular.module("documentTableDirective", ['documentTableFilters', 'documentTableServices']);
+    var documentTableDirective = angular.module("documentTableDirective", ['documentTableFilters']);
 
     // DIRECTIVES
     documentTableDirective
@@ -31,7 +83,7 @@
                                     '</tr>' +
                                 '</thead>' +
                                 '<tr ng-repeat="row in tableData">' +
-                                    '<td ng-repeat="key in columnKeys" ng-bind-html-unsafe="row[key] | fieldFormat:key:row">{{row[key] | fieldFormat:key:row}}</td>' +
+                                    '<td ng-repeat="key in columnKeys" ng-bind-html-unsafe="row[key] | fieldFormat:key:row" class="col-{{key}}" ng-init="initRow(this)" onMouseOver="actionDelegate(event, this)" onMouseOut="actionDelegate(event, this)" onClick="actionDelegate(event, this)" onDblClick="actionDelegate(event, this)">{{row[key] | fieldFormat:key:row}}</td>' +
                                 '</tr>' +
                             '</table>' +
                             '<div class="{{paginationClass}}">' +
@@ -44,10 +96,20 @@
                             '</div>',
                 link: function ($scope, element, attrs, DocumentTableController) {
 
-                    var $injector = angular.injector(['documentTableServices']);
+                    $scope.initRow = function(elem) {
+                        actionDelegate(new Event('init'), elem);
+                    }
+
+                    var serviceFactory = (attrs.factory !== undefined && attrs.factory != null && attrs.factory != '') ? attrs.factory:'documentTableServices';
+                    var $injector = angular.injector([serviceFactory]);
 
                     // First, we need to reference the service factory name.
                     $scope.serviceName = attrs.service;
+
+                    $scope.actions = new Array();
+                    if(attrs.actions !== undefined) {
+                        $scope.actions = $scope.$eval(attrs.actions);
+                    }
 
                     // The attribute "columns" will determine which columns to show.
                     // It should be formmated like: {columnKey: 'Column Name'}
@@ -323,16 +385,6 @@
              * @return
             */
             return function (text, fieldKey, row) {
-                if(fieldKey == '$actions') {
-                    var actionsHtml = '';
-
-                    if(row.url !== undefined) {
-                        actionsHtml += '<a href="/profile/' + row.url + '">Profile</a>';
-                    }
-
-                    return actionsHtml;
-                }
-
                 if(fieldKey == 'created') {
                     var dateFilter = $filter('date');
                     return dateFilter(text);
