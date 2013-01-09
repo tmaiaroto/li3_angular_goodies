@@ -92,7 +92,7 @@ function actionDelegate(event, element) {
 										'<th ng-repeat="key in columnKeys" class="heading-{{key}}"><a href="#" ng-click="sortByColumn($event, key)" class="column-sort-field">{{columns[key]}}</a></th>' +
 									'</tr>' +
 								'</thead>' +
-								'<tr ng-repeat="row in tableData">' +
+								'<tr ng-repeat="row in tableData" ng-init="row[\'$dataClone\'] = dataClone(row)">' +
 									'<td ng-repeat="key in columnKeys" ng-bind-html-unsafe="row[key] | fieldFormat:key:row" class="col-{{key}}" ng-init="initRow(this)" onMouseOver="actionDelegate(event, this)" onMouseOut="actionDelegate(event, this)" onClick="actionDelegate(event, this)" onDblClick="actionDelegate(event, this)">{{row[key] | fieldFormat:key:row}}</td>' +
 								'</tr>' +
 							'</table>' +
@@ -122,6 +122,11 @@ function actionDelegate(event, element) {
 					$scope.actions = new Array();
 					if(attrs.actions !== undefined) {
 						$scope.actions = $scope.$eval(attrs.actions);
+					}
+
+					// Keeps a copy of the original data so when altering row[key] values, the original can be referenced again for other columns if they need the same data.
+					$scope.dataClone = function(data) {
+						return angular.copy(data);
 					}
 
 					// The attribute "columns" will determine which columns to show.

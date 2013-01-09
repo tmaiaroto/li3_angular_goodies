@@ -151,9 +151,32 @@ How? You aren't going to be manipulating the DOM in this case, you're going to b
 some text in this fake "Actions" column, you would do:
 ```
 function initActions(data, field, event, element) {
-	element.row[key] = '<a href="' + data.url + '">View</a>';
+	element.row[field] = '<a href="' + data.url + '">View</a>';
 }
 ```
 
 For each row you would now have a link "View" that went to whatever the URL was for the document's "url" field appear under each "Actions" column.
 You can include, almost, any HTML and/or JavaScript that you like here. It will be inserted into the directive's template.
+
+Note: There is a little gotchya here too. If you were to say, alter a certain column and then in another column go to access the original value...
+Well, it would be lost and you'd only be able to access your alteration. A real world example is if you wanted to link a URL value (like the example
+above) and also wanted to show that URL in another column truncated to save space. Your link out there would be the truncated URL. To remedy this,
+a ```$dataClone``` has object has been created within each row that holds a copy of the original row object. So for example:
+```
+function initUrl(data, field, event, element) {
+	element.row[field] = '<small style="word-wrap: break-word;">' + element.row['$dataClone'][field] + '</small>';
+}
+function initActions(data, field, event, element) {
+	element.row[field] = '<a href="' + element.row['$dataClone']['url']+ '">View</a>';
+}
+```
+
+If not for the $dataClone, you would have a broken URL because it would be using the altered value which is now all sorts of HTML. Even if you were
+to alter the string value by using substring() or something, you would still have issues. So this way you can always get the original data.
+
+__Complex Fields__   
+The ```$dataClone``` object is also handy for complex fields that the directive won't be able to simply treat as a string or date object. For example,
+let's say you have an object. The document table can't print these out, it'll just show [object Object] in the column. Note that arrays will actually
+print out as a comma separated string. Anyway, objects won't, but that doesn't mean you still can't manipulate the value for the column to display
+something else instead. This is very similar to the example above. You can use the ```$dataClone``` field in each row to format the data however
+you need for the column.
