@@ -245,10 +245,16 @@ function actionDelegate(event, element) {
 						break;
 					}
 
+					// A lock on navigation that gets set while waiting for a response from the server (otherwise, it gets confusing and jumps around).
+					$scope.navLock = false;
+
 					// A couple of methods to manipulate the document table...
 					$scope.makeQuery = function(query) {
 						if(query.length >= $scope.searchMin || query == '') {
-							$scope.q = query;
+							if(!$scope.navLock) {
+								$scope.navLock = true;
+								$scope.q = query;
+							}
 						}
 					};
 
@@ -258,31 +264,37 @@ function actionDelegate(event, element) {
 							return;
 						}
 
-						if(page == 'next' && $scope.page < $scope.totalPages) {
-							$scope.page++;
-						}
+						if(!$scope.navLock) {
+							$scope.navLock = true;
 
-						if(page == 'prev' && $scope.page > 1) {
-							$scope.page--;
-						}
-
-						if(page != 'prev' && page != 'next') {
-							$scope.page = page;
-						}
-
-						$injector.get($scope.serviceName).get({page: $scope.page, order: $scope.order, limit: $scope.limit, q: $scope.q}, function(u, getResponseHeaders) {
-							if(u.success == true) {
-								var fields = new Array();
-								if(u.documents[0] !== undefined) {
-									for(i in u.documents[0]) {
-										fields.push(i);
-									}
-									$scope.realFields = fields;
-								}
-								$scope.tableData = u.documents;
-								$scope.totalPages = u.totalPages;
+							if(page == 'next' && $scope.page < $scope.totalPages) {
+								$scope.page++;
 							}
-						});
+
+							if(page == 'prev' && $scope.page > 1) {
+								$scope.page--;
+							}
+
+							if(page != 'prev' && page != 'next') {
+								$scope.page = page;
+							}
+
+							$injector.get($scope.serviceName).get({page: $scope.page, order: $scope.order, limit: $scope.limit, q: $scope.q}, function(u, getResponseHeaders) {
+								if(u.success == true) {
+									var fields = new Array();
+									if(u.documents[0] !== undefined) {
+										for(i in u.documents[0]) {
+											fields.push(i);
+										}
+										$scope.realFields = fields;
+									}
+									$scope.tableData = u.documents;
+									$scope.totalPages = u.totalPages;
+								}
+								// Regardless if the request was successful or returned anything or not, release the nav lock.
+								$scope.navLock = false;
+							});
+						}
 					};
 
 					// TODO: this may be able to be set as a filter...the icons at least...
@@ -291,35 +303,41 @@ function actionDelegate(event, element) {
 							return;
 						}
 
-						var direction = 'desc';
+						if(!$scope.navLock) {
+							$scope.navLock = true;
 
-						$('.column-sort-field i').remove();
-						if($($event.target).hasClass('sort-desc')) {
-							$($event.target).removeClass('sort-desc');
-							$($event.target).addClass('sort-asc');
-							$($event.target).append(' <i class="icon-chevron-down"></i>');
-							direction = 'asc';
-						} else {
-							$($event.target).removeClass('sort-asc');
-							$($event.target).addClass('sort-desc');
-							$($event.target).append(' <i class="icon-chevron-up"></i>');
-							direction = 'desc';
-						}
+							var direction = 'desc';
 
-						$scope.order = key + ',' + direction;
-						$injector.get($scope.serviceName).get({page: $scope.page, order: $scope.order, limit: $scope.limit, q: $scope.q}, function(u, getResponseHeaders) {
-							if(u.success == true) {
-								var fields = new Array();
-								if(u.documents[0] !== undefined) {
-									for(i in u.documents[0]) {
-										fields.push(i);
-									}
-									$scope.realFields = fields;
-								}
-								$scope.tableData = u.documents;
-								$scope.totalPages = u.totalPages;
+							$('.column-sort-field i').remove();
+							if($($event.target).hasClass('sort-desc')) {
+								$($event.target).removeClass('sort-desc');
+								$($event.target).addClass('sort-asc');
+								$($event.target).append(' <i class="icon-chevron-down"></i>');
+								direction = 'asc';
+							} else {
+								$($event.target).removeClass('sort-asc');
+								$($event.target).addClass('sort-desc');
+								$($event.target).append(' <i class="icon-chevron-up"></i>');
+								direction = 'desc';
 							}
-						});
+
+							$scope.order = key + ',' + direction;
+							$injector.get($scope.serviceName).get({page: $scope.page, order: $scope.order, limit: $scope.limit, q: $scope.q}, function(u, getResponseHeaders) {
+								if(u.success == true) {
+									var fields = new Array();
+									if(u.documents[0] !== undefined) {
+										for(i in u.documents[0]) {
+											fields.push(i);
+										}
+										$scope.realFields = fields;
+									}
+									$scope.tableData = u.documents;
+									$scope.totalPages = u.totalPages;
+								}
+								// Regardless if the request was successful or returned anything or not, release the nav lock.
+								$scope.navLock = false;
+							});
+						}
 					};
 
 					// Watch a bunch of stuff...Starting with the table data.
@@ -400,6 +418,9 @@ function actionDelegate(event, element) {
 								}
 								$scope.tableData = u.documents;
 								$scope.totalPages = u.totalPages;
+
+								// Release the lock after the search completes.
+								$scope.navLock = false;
 							}
 						});
 					});
