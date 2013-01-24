@@ -83,7 +83,7 @@ function actionDelegate(event, element) {
 				controller: 'DocumentTableController',
 				template: '<div>' +
 							'<form class="form-search" style="{{searchStyle}}">' +
-								'<input ng-model="q" ng-change="makeQuery(q)" type="text" class="input-{{searchSize}} search-query" placeholder="{{searchPlaceholder}}">' +
+								'<input ng-model="query" type="text" class="input-{{searchSize}} search-query" placeholder="{{searchPlaceholder}}">' +
 							'</form>' +
 							'<table class="table {{tableClass}}">' +
 								'<caption ng-bind-html-unsafe="tableCaption">{{tableCaption}}</caption>' +
@@ -248,14 +248,45 @@ function actionDelegate(event, element) {
 					// A lock on navigation that gets set while waiting for a response from the server (otherwise, it gets confusing and jumps around).
 					$scope.navLock = false;
 
+					element.bind("keydown keypress", function(event) {
+				        if(event.which === 13) {
+				        	if($scope.query.length >= $scope.searchMin) {
+					         	$scope.makeQuery($scope.query);
+				         	}
+				        }
+				    });
+
+					$scope.$watch('query', function(newValue, oldValue, $scope) {
+						if(newValue === undefined) {
+							return;
+						}
+						if(newValue.length >= $scope.searchMin || newValue != '') {
+							$scope.makeQuery($scope.query);
+						}
+
+					});
+
 					// A couple of methods to manipulate the document table...
 					$scope.makeQuery = function(query) {
-						if(query.length >= $scope.searchMin || query == '') {
-							if(!$scope.navLock) {
-								$scope.navLock = true;
-								$scope.q = query;
+						$scope.navLock = true;
+						$injector.get($scope.serviceName).get({territoryUrl: $scope.territoryUrl, page: $scope.page, order: $scope.order, limit: $scope.limit, q: $scope.query}, function(u, getResponseHeaders) {
+							if(u.success == true) {
+								$scope.$apply(function(){
+									var fields = new Array();
+									if(u.documents[0] !== undefined) {
+										for(i in u.documents[0]) {
+											fields.push(i);
+										}
+										$scope.realFields = fields;
+									}
+									$scope.tableData = u.documents;
+									$scope.totalPages = u.totalPages;
+
+									// Release the lock after the search completes.
+									$scope.navLock = false;
+								});
 							}
-						}
+						});
 					};
 
 					$scope.changePage = function($event, page) {
@@ -400,29 +431,6 @@ function actionDelegate(event, element) {
 							}
 						}
 
-					});
-
-					// Look for a search query, this will be populated once the query reaches the minimum character limit.
-					$scope.$watch('q', function(newValue, oldValue, scope) {
-						if(newValue === undefined) {
-							return;
-						}
-						$injector.get($scope.serviceName).get({territoryUrl: $scope.territoryUrl, page: $scope.page, order: $scope.order, limit: $scope.limit, q: $scope.q}, function(u, getResponseHeaders) {
-							if(u.success == true) {
-								var fields = new Array();
-								if(u.documents[0] !== undefined) {
-									for(i in u.documents[0]) {
-										fields.push(i);
-									}
-									$scope.realFields = fields;
-								}
-								$scope.tableData = u.documents;
-								$scope.totalPages = u.totalPages;
-
-								// Release the lock after the search completes.
-								$scope.navLock = false;
-							}
-						});
 					});
 
 					// Watch to see if the service changed on the fly (and this should also initially load the data).
